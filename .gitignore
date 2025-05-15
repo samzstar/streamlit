@@ -1,0 +1,4 @@
+# Ignore processed data
+data/processed/
+
+.venv/
