@@ -3,6 +3,8 @@ import plotly.express as px
 import pyspark.sql.functions as F
 from most_used_cards import create_card_counts_with_names
 from PIL import Image
+import pandas as pd
+import requests
 
 # Metrics Functions
 def calculate_total_crowns(filtered_df):
@@ -122,6 +124,74 @@ def create_most_used_cards_bar(df):
     return fig
 
 
+# Generates a list of image links for cards in descending order of most used cards (top ten only)
+def generate_list_image_links(top_ten_df):
+    
+    card_images_df = pd.read_csv("app/data/raw/card_ids_images.csv", index_col = 0)
+    top_ten_images_df = pd.merge(card_images_df, top_ten_df, on = "card_name", how = "inner")
+    top_ten_images_df = top_ten_images_df.sort_values("card_count", ascending=False)
+    images_in_order = list(top_ten_images_df["image_link"])
+    
+    return images_in_order
+
+
+# Takes in the top ten df and uses it to add images to the bar chart
+def add_images(top_ten_df):
+    # im = Image.open(requests.get(url, stream=True).raw)
+    image_list = generate_list_image_links(top_ten_df)
+    image_size = (40, 45)
+    col1, col2, col3, col4, col5, col6, col7, col8, col9, col10 = st.columns(10, vertical_alignment="center")
+    with col1:
+            card = Image.open(requests.get(image_list[0], stream=True).raw)
+            card = card.resize(image_size)
+            st.image(card)
+            
+    with col2:
+            card = Image.open(requests.get(image_list[1], stream=True).raw)
+            card = card.resize(image_size)
+            st.image(card)
+            
+    with col3:
+        card = Image.open(requests.get(image_list[2], stream=True).raw)
+        card = card.resize(image_size)
+        st.image(card)
+        
+    with col4:
+        card = Image.open(requests.get(image_list[3], stream=True).raw)
+        card = card.resize(image_size)
+        st.image(card)
+        
+    with col5:
+        card = Image.open(requests.get(image_list[4], stream=True).raw)
+        card = card.resize(image_size)
+        st.image(card)
+        
+    with col6:
+        card = Image.open(requests.get(image_list[5], stream=True).raw)
+        card = card.resize(image_size)
+        st.image(card)
+
+    with col7:
+        card = Image.open(requests.get(image_list[6], stream=True).raw)
+        card = card.resize(image_size)
+        st.image(card)
+        
+    with col8:
+        card = Image.open(requests.get(image_list[7], stream=True).raw)
+        card = card.resize(image_size)
+        st.image(card)
+        
+    with col9:
+        card = Image.open(requests.get(image_list[8], stream=True).raw)
+        card = card.resize(image_size)
+        st.image(card)
+        
+    with col10:
+        card = Image.open(requests.get(image_list[9], stream=True).raw)
+        card = card.resize(image_size)
+        st.image(card)
+
+
 def display_visualisations(filtered_df):
     """Display visualisations in Streamlit."""
     # Top 10 Most Used Cards Bar Chart
@@ -131,8 +201,11 @@ def display_visualisations(filtered_df):
     # Create bar chart for top ten most used cards
     fig1 = create_most_used_cards_bar(df)
     
-    # Diplay ttile of chart
+    # Diplay title of chart
     st.header("Top 10 Most Used Cards", divider="blue")
     
     # Display bar chart
     st.plotly_chart(fig1)
+    
+    # Display images of top ten most used cards
+    add_images(df)
