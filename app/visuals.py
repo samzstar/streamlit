@@ -5,6 +5,7 @@ from most_used_cards import create_card_counts_with_names
 from PIL import Image
 import pandas as pd
 import requests
+import os
 
 # Metrics Functions
 def calculate_total_crowns(filtered_df):
@@ -127,7 +128,9 @@ def create_most_used_cards_bar(df):
 # Generates a list of image links for cards in descending order of most used cards (top ten only)
 def generate_list_image_links(top_ten_df):
     
-    card_images_df = pd.read_csv("data/raw/card_ids_images.csv", index_col = 0)
+    card_filepath = os.path.join(os.path.dirname(__file__),
+        "data/raw/card_ids_images.csv")
+    card_images_df = pd.read_csv(card_filepath, index_col = 0)
     top_ten_images_df = pd.merge(card_images_df, top_ten_df, on = "card_name", how = "inner")
     top_ten_images_df = top_ten_images_df.sort_values("card_count", ascending=False)
     images_in_order = list(top_ten_images_df["image_link"])
