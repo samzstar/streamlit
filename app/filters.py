@@ -5,17 +5,24 @@ def add_league_filter(df):
     """Add a filter for League."""
     return st.sidebar.selectbox(
         "Select League",
-        options=['Challenger I', 'Challenger II', 'Challenger III', 'Master I', 'Master II', 'Master III',
+        options=['All Leagues', 'Challenger I', 'Challenger II', 'Challenger III', 'Master I', 'Master II', 'Master III',
                  'Champion', 'Grand Champion', 'Royal Champion', 'Ultimate Champion']
     )
 
 def filter_dataframe_league(df, league_filter):
     """Filter the DataFrame based on selected league filter."""
-    return df.filter(df["league"] == league_filter)
+    if league_filter == "All Leagues":
+        return df
+    else:
+        return df.filter(df["league"] == league_filter)
 
 def add_league_image(league):
     
-    if league == "Challenger I":
+    if league == "All Leagues":
+        icon = Image.open("app/images/all_leagues.png")
+        icon.resize((50, 50))
+    
+    elif league == "Challenger I":
         icon = Image.open("app/images/challenger_I.png")
         icon.resize((50, 50))
         
@@ -92,14 +99,17 @@ def add_player_filter(distinct_players):
     """Add a filter for player tags."""
     return st.sidebar.selectbox(
         "Select Player Tag",
-        options=distinct_players
+        options= ["All Players"] + distinct_players
     )
 
 
 def filter_dataframe_player(df, player_filter):
     """Filter the DataFrame based on selected player filter.
     Return filtered DataFrame"""
-    return df.filter((df.winner_tag == player_filter) | (df.loser_tag == player_filter))
+    if player_filter == "All Players":
+        return df
+    else:
+        return df.filter((df.winner_tag == player_filter) | (df.loser_tag == player_filter))
 
 
 def apply_filter(df):
